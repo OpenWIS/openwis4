@@ -1,0 +1,85 @@
+
+<script type="text/javascript">
+
+	/**
+	 * Add new angular dependencies
+	 */
+	angular.module('gn_dashboard_controller').requires.push('gn_openwis_cache_controller','gn_openwis_monitoring_controller');
+	
+	/**
+	 * This is the extended controller that will replace the original one
+	 * 
+	 */
+	 angular.module('gn_dashboard_controller').controller('EXT_GnDashboardController', ['$scope', '$http', '$controller',
+	    function($scope, $http, $controller) {
+		 
+		 angular.extend(this, $controller('GnDashboardController', {
+	            $scope : $scope,
+	            $http : $http
+	          }));
+
+
+	      $scope.pageMenu = {
+	        folder: 'dashboard/',
+	        defaultTab: 'status',
+	        tabs:
+	            [{
+	              type: 'status',
+	              label: 'status',
+	              icon: 'fa-dashboard',
+	              href: '#/dashboard/status'
+	            },{
+	              type: 'statistics-search',
+	              label: 'searchStatistics',
+	              icon: 'fa-search',
+	              href: '#/dashboard/statistics-search'
+	            },{
+	              type: 'statistics-content',
+	              label: 'contentStatistics',
+	              icon: 'fa-pie-chart',
+	              href: '#/dashboard/statistics-content'
+	            },{
+	              type: 'information',
+	              label: 'information',
+	              icon: 'fa-list-ul',
+	              href: '#/dashboard/information'
+	            },{
+	              type: 'versioning',
+	              label: 'versioning',
+	              icon: 'fa-code-fork',
+	              href: '#/dashboard/versioning'
+	            },{
+	              type: 'openwis',
+	              label: 'openwis-stats',
+	              icon: 'fa-bar-chart',
+	              href: '#/dashboard/openwis'
+	            },{
+	              type: 'openwis-cache',
+	              label: 'openwis-cache',
+	              icon: 'fa-table',
+	              href: '#/dashboard/openwis-cache'
+	            }]
+	      };
+
+	      $scope.info = {};
+
+	      $http.get($scope.url + 'xml.config.info@json').success(function(data) {
+	        $scope.info = data;
+	      }).error(function(data) {
+	        // TODO
+	      });
+	      
+
+	}]);
+
+	
+			
+	
+	/**
+	 * Register the replacement
+	 * 
+	 */
+	JsUtil.registerReplacementController('GnDashboardController','EXT_GnDashboardController');
+
+	
+</script>

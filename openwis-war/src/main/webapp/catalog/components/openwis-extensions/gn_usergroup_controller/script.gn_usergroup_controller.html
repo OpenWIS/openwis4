@@ -1,0 +1,69 @@
+
+<script type="text/javascript">
+
+	/**
+	 * Add new angular dependencies
+	 */
+	angular.module('gn_usergroup_controller').requires.push('gn_openwis_blacklist_controller','gn_openwis_admin_subscription_controller','gn_openwis_admin_request_controller');
+			
+	/**
+	 * This is the extended controller that will replace the original one
+	 * 
+	 */
+	
+	angular.module('gn_usergroup_controller').controller('EXT_GnUserGroupController', [
+	    '$scope', '$routeParams', '$http', '$rootScope', '$translate', '$timeout', '$controller',
+	    function($scope, $routeParams, $http, $rootScope, $translate, $timeout, $controller) {
+	    	
+	    	angular.extend(this, $controller('GnUserGroupController', {
+	            $scope : $scope,
+	            $routeParams : $routeParams,
+	            $http : $http,
+	            $rootScope : $rootScope,
+	            $translate : $translate,
+	            $timeout : $timeout
+	          }));
+	    	
+	    	$scope.pageMenu = {
+	    	        folder: 'usergroup/',
+	    	        defaultTab: 'groups',
+	    	        tabs:
+	    	            [{
+	    	              type: 'groups',
+	    	              label: 'manageGroups',
+	    	              icon: 'fa-group',
+	    	              href: '#/organization/groups'
+	    	            },{
+	    	              type: 'users',
+	    	              label: 'manageUsers',
+	    	              icon: 'fa-user',
+	    	              href: '#/organization/users'
+	    	            },{
+	    	              type: 'blacklist',
+	    	              label: 'blacklist',
+	    	              icon: 'fa-unlock-alt',
+	    	              href: '#/organization/blacklist'
+	    	            },{
+	    	              type: 'subscriptions-mine',
+	    	              label: 'subscriptions-mine',
+	    	              icon: 'fa-rss',
+	    	              href: '#/organization/subscriptions-mine'
+	    	            },{
+	    	              type: 'requests-mine',
+	    	              label: 'requests-mine',
+	    	              icon: 'fa-download',
+	    	              href: '#/organization/requests-mine'
+	    	            }]
+   	      	};
+	    		    
+	    	
+    }]);
+	
+	/**
+	 * Register the replacement
+	 * 
+	 */
+	JsUtil.registerReplacementController('GnUserGroupController','EXT_GnUserGroupController');
+
+	
+</script>

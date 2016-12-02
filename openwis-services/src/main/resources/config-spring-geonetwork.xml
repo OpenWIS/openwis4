@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans default-lazy-init="true"
+	xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:sws="http://www.springframework.org/schema/web-services"
+	xmlns:oxm="http://www.springframework.org/schema/oxm"
+	xsi:schemaLocation=" 
+	    http://www.springframework.org/schema/web-services
+        http://www.springframework.org/schema/web-services/web-services-2.0.xsd
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-3.2.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+        http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm-1.5.xsd">
+
+
+	<context:component-scan base-package="org.fao.geonet" />
+
+	<bean id="disseminationPairFormatter"
+		class="org.fao.geonet.services.openwis.subscription.DisseminationPairFormatter" />
+	<bean id="disseminationPairRequestFormatter"
+		class="org.fao.geonet.services.openwis.subscription.DisseminationPairRequestFormatter" />
+
+
+	<bean id="conversionService"
+		class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+		<property name="formatters">
+			<set>
+				<ref bean="disseminationPairFormatter" />
+				<ref bean="disseminationPairRequestFormatter" />
+			</set>
+		</property>
+	</bean>
+
+	<!-- Job to check Direct Downloads requests -->
+	<bean name="directDownloadJob"
+		class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+		<property name="jobClass"
+			value="org.fao.geonet.services.openwis.subscription.job.DirectDownloadJob" />
+	</bean>
+
+	<bean id="cronTriggerDirectDownload"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="directDownloadJob" />
+		<property name="cronExpression" value="0 0/2 * * * ?" />
+		<property name="startDelay" value="30000" />
+	</bean>
+
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="jobFactory">
+			<bean class="org.fao.geonet.util.spring.AutowiringSpringBeanJobFactory" />
+		</property>
+		<property name="triggers">
+			<list>
+				<ref bean="cronTriggerDirectDownload" />
+			</list>
+		</property>
+	</bean>
+</beans>

@@ -1,0 +1,208 @@
+<div class="row" data-ng-controller="GnUserGroupController">
+  <div class="col-lg-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <span data-translate="">groups</span>
+        <i data-ng-show="isLoadingGroups" class="fa fa-spinner fa-spin"></i>
+      </div>
+      <div class="panel-body">
+        <input class="form-control"
+               data-ng-show="groups.length > 1"
+               data-ng-model="groupSearch.$" autofocus=""
+               placeholder="{{'filter' | translate}}"/>
+        <input type="hidden" data-ng-model="groupSelected.id"/>
+        <div class="list-group">
+          <a href="" class="list-group-item"
+             data-ng-repeat="g in pageItems()"
+             data-ng-class="g.id === groupSelected.id ? 'active' : ''"
+             data-ng-click="selectGroup(g)"> {{g.label[lang]}} </a>
+          <span data-gn-pagination-list=""
+              data-items="groups | filter:groupSearch | orderBy:'name'"
+              data-cache="groups"/>
+        </div>
+
+        <button type="button"
+                class="btn btn-primary btn-block"
+                data-ng-click="addGroup()"
+                data-ng-show="user.isAdministratorOrMore()"
+                id="gn-btn-group-add">
+          <i class="fa fa-plus"/>
+          <span data-translate="">newGroup</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+
+  <div class="col-lg-8" data-ng-hide="groupSelected.id == null">
+    <div class="panel panel-default">
+      <div class="panel-heading"
+        title="{{searchResults.count > 0 ? ('cantDeleteGroupHavingRecords' | translate) : ''}}">
+        <span data-ng-hide="groupSelected.id == ''" data-translate="">updateGroup</span>
+        <span data-ng-hide="groupSelected.id != ''" data-translate="">newGroup</span>
+        <span><strong>{{groupSelected.name}}</strong></span>
+        <div class="btn-toolbar"
+                data-ng-show="user.isAdministratorOrMore() || groupSelected['@editable'] == 'true'">
+          <button type="button" class="btn btn-primary pull-right"
+            data-ng-disabled="!gnGroupEdit.$valid && !gnGroupEdit.dirty"
+            data-ng-click="saveGroup('#gn-group-edit', '#group-logo-upload')" id="gn-btn-group-save">
+            <i class="fa fa-save"></i>&nbsp;
+            <span data-translate="">saveGroup</span>
+          </button>
+          <button type="button" class="btn pull-right btn-danger"
+            data-ng-disabled="searchResults.count > 0"
+            data-ng-hide="groupSelected.id == ''"
+            data-ng-click="deleteGroup(groupSelected.id)" id="gn-btn-group-delete">
+            <i class="fa fa-times"></i>&nbsp;
+            <span data-translate="">deleteGroup</span>
+          </button>
+        </div>
+      </div>
+
+
+      <div class="panel-body">
+        <form id="gn-group-edit" name="gnGroupEdit" data-ng-keypress="updatingGroup()" method="POST"
+             action="admin.group.update?_content_type=json" data-file-upload="mdImportUploadOptions"  role="form">
+          <fieldset>
+            <input type="hidden" name="id" data-ng-model="groupSelected.id"
+              value="{{groupSelected.id}}"/>
+            <div data-ng-class="gnGroupEdit.name.$error.required ? 'has-error' : ''">
+              <label class="control-label" data-translate="">groupName</label>
+              <input type="text" id="groupname" name="name" class="form-control"
+                     data-ng-model="groupSelected.name"
+                     data-ng-required="true"/>
+              <p class="help-block" data-translate="">groupNameHelp</p>
+            </div>
+            <label data-translate="">groupDescription</label>
+            <textarea name="description" class="form-control"
+              data-ng-model="groupSelected.description"/>
+            <p class="help-block" data-translate="">groupDescriptionHelp</p>
+
+            <label data-translate="">category</label>
+             <select name="category" data-ng-model="groupSelected.defaultCategory" 
+             		ng-options="category.label[lang] for category in categories track by category.id"
+                    class="form-control">
+                <option value="none">&nbsp;</option>
+            </select>
+                        
+            <p class="help-block" data-translate="">categoryDescriptionHelp</p>
+
+            <div
+              data-ng-class="gnGroupEdit.email.$error.email || gnGroupEdit.email.$error.required ? 'has-error' : ''">
+              <label class="control-label" data-translate="">groupEmail</label>
+              <input type="email" name="email" class="form-control"
+                data-ng-model="groupSelected.email"/>
+              <p class="help-block" data-translate="">groupEmailHelp</p>
+            </div>
+            <div>
+              <label class="control-label" data-translate="">groupWebsite</label>
+              <input type="website" name="website" class="form-control"
+                data-ng-model="groupSelected.website"/>
+              <p class="help-block" data-translate="">groupWebsiteHelp</p>
+            </div>
+
+              <!-- Upload panel -->
+              <div class="form-group">
+                <label for="group-logo-upload" class="control-label" data-translate="">groupLogo</label>
+
+                <!--Display saved logo-->
+                <div data-ng-show="groupSelected.logo">
+                  <img data-ng-show="groupSelected.logo" src="{{groupSelected.logo}}"
+                       style="max-width:128px; max-height:128px">
+                  <a href="" data-ng-click="deleteGroupLogo()"
+                     class="text-danger">
+                    <i data-ng-show="groupSelected.logo"
+                       class="fa fa-times delete"></i>
+                  </a>
+                </div>
+
+                <div data-ng-show="!groupSelected.logo">
+
+                  <!--Display logo picker from harvester logos-->
+                  <div class="row" data-ng-show="queue.length == 0">
+                    <div class="col-md-5" translate>selectExistingLogo</div>
+                    <div class="col-md-3">
+                      <a href="" data-ng-click="groupSelected.logoFromHarvest = undefined"
+                         class="text-danger pull-right">
+                        <i data-ng-show="groupSelected.logoFromHarvest"
+                           class="fa fa-times delete"></i>
+                      </a>
+                      <div class="" gn-logo-picker="groupSelected.logoFromHarvest"></div>
+                    </div>
+                  </div>
+
+                  <!--Display logo upload input-->
+                  <div class="row" data-ng-show="!groupSelected.logoFromHarvest" id="group-logo-upload">
+                    <div class="col-md-5" translate>upload</div>
+                    <div class="col-md-7 panel panel-default" >
+                      <div class="panel-body">
+
+                        <span class="btn btn-success btn-block fileinput-button">
+                            <i class="fa fa-plus fa-white"></i>
+                            <span data-translate="">chooseOrDropResource</span>
+                            <input type="file" id="group-logo" name="logofile" multiple="false">
+                        </span>
+                        <ul style="list-style: none">
+                          <li data-ng-repeat="file in queue">
+                            <div class="preview" data-file-upload-preview="file"></div>
+                            {{file.name}} ({{file.type}} / {{file.size | formatFileSize}})
+                            <i class="fa fa-trash-o" data-ng-click="clear(file)"></i>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="checkbox">
+                <label>
+                  <span data-translate="">enableAllowedCategories</span>
+                  <input type="checkbox"
+                         name="enableAllowedCategories"
+                         data-ng-model="groupSelected.enableAllowedCategories"/>
+                </label>
+              </div>
+              <div>
+                <label data-translate="">allowedCategories</label>
+              
+                <select class="form-control"
+                      name="allowedCategories"
+                      multiple="multiple"
+                      data-ng-disabled="!groupSelected.enableAllowedCategories"
+                      data-ng-model="groupSelected.allowedCategories"
+                      data-ng-options="c as (c.label[lang] || '') for c in categories track by c.id">
+              </select>
+                <p class="help-block" data-translate="">allowedCategoriesDescriptionHelp</p>
+                
+             </div>
+          </fieldset>
+        </form>
+
+
+        <div data-ng-hide="!groupSelected.label">
+          <h3><span data-translate="">translationForGroup</span> {{groupSelected.name}}</h3>
+          <div data-gn-db-translation="groupSelected" data-type="group"/>
+        </div>
+
+
+        <div data-ng-search-form="" data-ng-show="searchResults.count != 0">
+          <h3>
+            <ng-pluralize count="searchResults.count"
+                          when="{'0': ('noRecordFound' | translate),
+                'one': '1' +  ('groupRecord' | translate) + ' {{groupSelected.label[lang]}}',
+                'other': '{}' +  ('groupRecords' | translate) + ' {{groupSelected.label[lang]}}'}"
+                > </ng-pluralize>
+          </h3>
+          <div data-gn-search-form-results=""
+               data-gn-search-form-results-mode="title"
+               data-search-results="searchResults"
+               data-pagination-info="paginationInfo">
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

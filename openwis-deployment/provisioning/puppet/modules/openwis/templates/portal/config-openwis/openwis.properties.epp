@@ -1,0 +1,2 @@
+openwis.data_services_base_url       = <%= $data_services_base_url %>
+openwis.management_services_base_url = <%= $management_services_base_url %>

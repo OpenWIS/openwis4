@@ -1,0 +1,86 @@
+#!/bin/bash
+
+set -o allexport
+set -o errexit
+set -o nounset
+
+export SCRIPTS_DIR=$(dirname $(realpath $0))
+export PROVISIONING_DIR=$(realpath ${SCRIPTS_DIR}/..)
+export CONFIG_DIR=${PROVISIONING_DIR}/config
+export WORKING_FOLDER=${PROVISIONING_DIR}/working
+export PORTAL_WORKSPACE=${PROVISIONING_DIR}/portal_workspace
+
+cd ${SCRIPTS_DIR}
+
+#===============================================================================
+# functions to use sudo to execute commands as various users
+#===============================================================================
+function as_root() {
+	sudo "$@"
+}
+
+function as_openwis() {
+	sudo -u openwis "$@"
+}
+
+function as_tomcat() {
+	sudo -u tomcat "$@"
+}
+
+function as_postgres() {
+	sudo -u postgres "$@"
+}
+
+#===============================================================================
+# function to touch a file (appending a timestamped message)
+#===============================================================================
+function touch_file() {
+	FILE=$1
+	MESSAGE=$2
+
+	echo "$(date) : ${MESSAGE}" >> ${FILE}
+}
+
+#===============================================================================
+# function to get a file...
+#
+# parameters:
+#  1 - the source file (SOURCE_FILE)
+#
+#   if the SOURCE_FILE (parameter 1) starts with "http" or "ftp", it is assumed
+#   to be a remote file & is downloaded using WGET
+#
+#  otherwise the file is assumed to be a local file & is simply copied (always)
+#===============================================================================
+function get_file() {
+	SOURCE_FILE=$1
+	SOURCE_FILE_NAME=${SOURCE_FILE##*/}
+	DEST_FILE=${DOWNLOADS_DIR}/${SOURCE_FILE_NAME}
+	OVERWRITE=$2
+
+	if [[ ${SOURCE_FILE} == http* || ${SOURCE_FILE} == ftp* ]]
+	then
+		if [[] ${OVERWRITE} != "no-overwrite" || ! -f ${DEST_FILE} ]]
+		then
+			as_root wget ${SOURCE_FILE} -O ${DEST_FILE}
+		fi
+	else
+		as_root cp ${SOURCE_FILE} ${DEST_FILE}
+	fi
+}
+
+#===============================================================================
+#
+#===============================================================================
+function jboss_cli() {
+	as_openwis /usr/share/jboss-as/bin/jboss-cli.sh "$@"
+}
+
+#===============================================================================
+#
+#===============================================================================
+function wait_for_service() {
+	URL=$1
+
+	wget --spider --tries 10 --retry-connrefused --no-check-certificate ${URL}
+}

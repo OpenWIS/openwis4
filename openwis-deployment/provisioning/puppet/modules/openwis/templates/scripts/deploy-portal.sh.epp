@@ -1,0 +1,27 @@
+#!/bin/bash
+
+. $(dirname $(realpath $0))/setenv.sh
+
+export SOURCE_PORTAL_WAR=<%= $source_portal_war %>
+export PORTAL_WAR_FILE=${SOURCE_PORTAL_WAR##*/}
+
+export WEBAPPS_FOLDER=/usr/share/tomcat/webapps
+export PORTAL_WEBAPP_FOLDER=${WEBAPPS_FOLDER}/${PORTAL_WAR_FILE%.*}
+
+# Stop Tomcat & clear the logs folder
+as_root systemctl stop tomcat.service
+as_root rm -f /usr/share/tomcat/logs/*
+
+# get the portal WAR file (local or remote, as appropriate)
+get_file ${SOURCE_PORTAL_WAR} no-overwrite
+
+# remove the web app folder
+test -d ${PORTAL_WEBAPP_FOLDER} && as_root rm -rf ${PORTAL_WEBAPP_FOLDER}
+
+# deploy & configure the web app
+as_tomcat unzip -q ${DOWNLOADS_DIR}/${PORTAL_WAR_FILE} -d ${PORTAL_WEBAPP_FOLDER}
+
+as_tomcat cp -r ${CONFIG_SRC_DIR}/portal/* ${PORTAL_WEBAPP_FOLDER}/WEB-INF/
+
+# (re)start Tomcat
+as_root systemctl start tomcat.service

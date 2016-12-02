@@ -1,0 +1,24 @@
+#!/bin/bash
+
+. $(dirname $(realpath $0))/setenv.sh
+
+export SOURCE_STAGING_POST_WAR=<%= $source_staging_post_war %>
+export STAGING_POST_WAR_FILE=${SOURCE_STAGING_POST_WAR##*/}
+
+export STAGING_POST_DIR=<%= $staging_post_dir %>
+
+# Stop Tomcat & clear the logs folder
+as_root systemctl stop tomcat.service
+as_root rm -f /usr/share/tomcat/logs/*
+
+# get the portal WAR file (local or remote, as appropriate)
+get_file ${SOURCE_STAGING_POST_WAR} overwrite
+
+# remove the web app folder
+test -d ${STAGING_POST_DIR} && as_root rm -rf ${STAGING_POST_DIR}/*
+
+# deploy & configure the web app
+as_openwis unzip -q ${DOWNLOADS_DIR}/${STAGING_POST_WAR_FILE} -d ${STAGING_POST_DIR}
+
+# (re)start Tomcat
+as_root systemctl start tomcat.service

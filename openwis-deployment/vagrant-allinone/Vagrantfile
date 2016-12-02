@@ -1,0 +1,60 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+require 'yaml'
+
+config 		= YAML.load_file 'config.yaml'
+host_config	= config['host']
+
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "openwis/centos7"
+
+  config.vm.hostname = "ow4dev"
+  
+  config.ssh.insert_key = false
+
+  # Portal Web Access (will switch to Apache when configured)
+  config.vm.network "forwarded_port", guest: 80, host: 10080, host_ip: "localhost"
+  # Portal remote debug
+  config.vm.network "forwarded_port", guest: 8000, host: 18000, host_ip: "localhost"
+  # JBoss Web Access (will be disabled once everything works)
+  config.vm.network "forwarded_port", guest: 8180, host: 18180, host_ip: "localhost"
+  # JBoss Admin Console
+  config.vm.network "forwarded_port", guest: 9990, host: 19990, host_ip: "localhost"
+  # JBoss remote debug
+  config.vm.network "forwarded_port", guest: 8787, host: 18787, host_ip: "localhost"
+
+  config.vm.network "private_network", ip: "192.168.54.101"
+
+  config.vm.synced_folder host_config['openwis_workspace'], "/tmp/openwis_workspace"
+  config.vm.synced_folder host_config['portal_workspace'], "/tmp/portal_workspace"
+
+  config.vm.synced_folder "logs", "/home/openwis/logs", create: true, owner: "openwis", group: "openwis"
+  config.vm.synced_folder "openwis", "/var/opt/openwis", create: true, owner: "openwis", group: "openwis"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = 4048
+	  vb.cpus = 4
+  end
+
+  # This provisioner performs some important Vagrant intialistion & must
+  # always run
+  config.vm.provision "puppet", run: "always" do |vagrant|
+    vagrant.manifest_file     = "vagrant.pp"
+    vagrant.manifests_path    = "provisioning/manifests"
+    vagrant.hiera_config_path = "provisioning/hiera.yaml"
+    vagrant.options           = "--strict_variables --parser future"
+  end
+
+  # This provisions performs the OpenWIS environment provisioning & only
+  # runs once
+  config.vm.provision "puppet" do |openwis|
+    openwis.manifest_file     = "openwis.pp"
+    openwis.manifests_path    = "provisioning/manifests"
+    openwis.module_path       = "../provisioning/puppet/modules"
+    openwis.hiera_config_path = "provisioning/hiera.yaml"
+    openwis.options           = "--strict_variables --parser future"
+  end
+
+end

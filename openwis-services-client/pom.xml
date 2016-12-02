@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.geonetwork-opensource</groupId>
+		<artifactId>openwis-parent</artifactId>
+		<version>4.0.0-SNAPSHOT</version>
+		<relativePath>../openwis-parent/pom.xml</relativePath>
+	</parent>
+	<artifactId>openwis-services-client</artifactId>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.ws</groupId>
+			<artifactId>spring-ws-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-oxm</artifactId>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.jvnet.jaxb2.maven2</groupId>
+				<artifactId>maven-jaxb2-plugin</artifactId>
+				<version>0.12.3</version>
+				<executions>
+					<execution>
+						<id>products</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<schemaLanguage>WSDL</schemaLanguage>
+							<generatePackage>org.openwis.products.client</generatePackage>
+							<generateDirectory>${project.build.directory}/generated-sources/products</generateDirectory>
+							<schemas>
+								<!--<schema><url>http://wsf.cdyne.com/WeatherWS/Weather.asmx?wsdl</url></schema> -->
+								<schema>
+									<fileset>
+										<!-- Defaults to schemaDirectory. -->
+										<directory>${basedir}/src/main/resources/schemas</directory>
+										<!-- Defaults to schemaIncludes. -->
+										<includes>
+											<!--<include>*.xsd</include> -->
+											<include>ProductMetadataService.wsdl</include>
+										</includes>
+									</fileset>
+								</schema>
+							</schemas>
+						</configuration>
+					</execution>
+					<execution>
+						<id>blacklist</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<schemaLanguage>WSDL</schemaLanguage>
+							<generatePackage>org.openwis.blacklist.client</generatePackage>
+							<generateDirectory>${project.build.directory}/generated-sources/blacklist</generateDirectory>
+							<schemas>
+								<schema>
+									<fileset>
+										<!-- Defaults to schemaDirectory. -->
+										<directory>${basedir}/src/main/resources/schemas</directory>
+										<!-- Defaults to schemaIncludes. -->
+										<includes>
+											<include>BlacklistService.wsdl</include>
+										</includes>
+									</fileset>
+								</schema>
+							</schemas>
+						</configuration>
+					</execution>
+					<execution>
+						<id>subscription</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<schemaLanguage>WSDL</schemaLanguage>
+							<generatePackage>org.openwis.subscription.client</generatePackage>
+							<generateDirectory>${project.build.directory}/generated-sources/subscription</generateDirectory>
+							<schemas>
+								<!--<schema><url>http://wsf.cdyne.com/WeatherWS/Weather.asmx?wsdl</url></schema> -->
+								<schema>
+									<fileset>
+										<!-- Defaults to schemaDirectory. -->
+										<directory>${basedir}/src/main/resources/schemas</directory>
+										<!-- Defaults to schemaIncludes. -->
+										<includes>
+											<!--<include>*.xsd</include> -->
+											<include>SubscriptionService.wsdl</include>
+										</includes>
+									</fileset>
+								</schema>
+							</schemas>
+						</configuration>
+					</execution>
+					<execution>
+						<id>processed-request</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<schemaLanguage>WSDL</schemaLanguage>
+							<generatePackage>org.openwis.processedrequest.client</generatePackage>
+							<generateDirectory>${project.build.directory}/generated-sources/processedrequest</generateDirectory>
+							<schemas>
+								<!--<schema><url>http://wsf.cdyne.com/WeatherWS/Weather.asmx?wsdl</url></schema> -->
+								<schema>
+									<fileset>
+										<!-- Defaults to schemaDirectory. -->
+										<directory>${basedir}/src/main/resources/schemas</directory>
+										<!-- Defaults to schemaIncludes. -->
+										<includes>
+											<!--<include>*.xsd</include> -->
+											<include>ProcessedRequestService.wsdl</include>
+										</includes>
+									</fileset>
+								</schema>
+							</schemas>
+						</configuration>
+					</execution>
+					<execution>
+						<id>cache-index</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<schemaLanguage>WSDL</schemaLanguage>
+							<generatePackage>org.openwis.cacheindex.client</generatePackage>
+							<generateDirectory>${project.build.directory}/generated-sources/cacheindex</generateDirectory>
+							<schemas>
+								<!--<schema><url>http://wsf.cdyne.com/WeatherWS/Weather.asmx?wsdl</url></schema> -->
+								<schema>
+									<fileset>
+										<!-- Defaults to schemaDirectory. -->
+										<directory>${basedir}/src/main/resources/schemas</directory>
+										<!-- Defaults to schemaIncludes. -->
+										<includes>
+											<!--<include>*.xsd</include> -->
+											<include>CacheIndex.wsdl</include>
+										</includes>
+									</fileset>
+								</schema>
+							</schemas>
+						</configuration>
+					</execution>
+					<execution>
+						<id>request</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<schemaLanguage>WSDL</schemaLanguage>
+							<generatePackage>org.openwis.request.client</generatePackage>
+							<generateDirectory>${project.build.directory}/generated-sources/request</generateDirectory>
+							<schemas>
+								<!--<schema><url>http://wsf.cdyne.com/WeatherWS/Weather.asmx?wsdl</url></schema> -->
+								<schema>
+									<fileset>
+										<!-- Defaults to schemaDirectory. -->
+										<directory>${basedir}/src/main/resources/schemas</directory>
+										<!-- Defaults to schemaIncludes. -->
+										<includes>
+											<!--<include>*.xsd</include> -->
+											<include>RequestService.wsdl</include>
+										</includes>
+									</fileset>
+								</schema>
+							</schemas>
+						</configuration>
+					</execution>
+					<execution>
+						<id>disseminatedDataStatistics</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<schemaLanguage>WSDL</schemaLanguage>
+							<generatePackage>org.openwis.disseminatedDataStatistics.client</generatePackage>
+							<generateDirectory>${project.build.directory}/generated-sources/disseminatedDataStatistics</generateDirectory>
+							<schemas>
+								<!--<schema><url>http://wsf.cdyne.com/WeatherWS/Weather.asmx?wsdl</url></schema> -->
+								<schema>
+									<fileset>
+										<!-- Defaults to schemaDirectory. -->
+										<directory>${basedir}/src/main/resources/schemas</directory>
+										<!-- Defaults to schemaIncludes. -->
+										<includes>
+											<!--<include>*.xsd</include> -->
+											<include>DisseminatedDataStatistics.wsdl</include>
+										</includes>
+									</fileset>
+								</schema>
+							</schemas>
+						</configuration>
+					</execution>
+					<execution>
+						<id>exchangedDataStatistics</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<schemaLanguage>WSDL</schemaLanguage>
+							<generatePackage>org.openwis.exchangedDataStatistics.client</generatePackage>
+							<generateDirectory>${project.build.directory}/generated-sources/exchangedDataStatistics</generateDirectory>
+							<schemas>
+								<!--<schema><url>http://wsf.cdyne.com/WeatherWS/Weather.asmx?wsdl</url></schema> -->
+								<schema>
+									<fileset>
+										<!-- Defaults to schemaDirectory. -->
+										<directory>${basedir}/src/main/resources/schemas</directory>
+										<!-- Defaults to schemaIncludes. -->
+										<includes>
+											<!--<include>*.xsd</include> -->
+											<include>ExchangedDataStatistics.wsdl</include>
+										</includes>
+									</fileset>
+								</schema>
+							</schemas>
+						</configuration>
+					</execution>
+					<execution>
+						<id>replicatedDataStatistics</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<schemaLanguage>WSDL</schemaLanguage>
+							<generatePackage>org.openwis.replicatedDataStatistics.client</generatePackage>
+							<generateDirectory>${project.build.directory}/generated-sources/replicatedDataStatistics</generateDirectory>
+							<schemas>
+								<!--<schema><url>http://wsf.cdyne.com/WeatherWS/Weather.asmx?wsdl</url></schema> -->
+								<schema>
+									<fileset>
+										<!-- Defaults to schemaDirectory. -->
+										<directory>${basedir}/src/main/resources/schemas</directory>
+										<!-- Defaults to schemaIncludes. -->
+										<includes>
+											<!--<include>*.xsd</include> -->
+											<include>ReplicatedDataStatistics.wsdl</include>
+										</includes>
+									</fileset>
+								</schema>
+							</schemas>
+						</configuration>
+					</execution>
+					<execution>
+						<id>ingestedDataStatistics</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<schemaLanguage>WSDL</schemaLanguage>
+							<generatePackage>org.openwis.ingestedDataStatistics.client</generatePackage>
+							<generateDirectory>${project.build.directory}/generated-sources/ingestedDataStatistics</generateDirectory>
+							<schemas>
+								<!--<schema><url>http://wsf.cdyne.com/WeatherWS/Weather.asmx?wsdl</url></schema> -->
+								<schema>
+									<fileset>
+										<!-- Defaults to schemaDirectory. -->
+										<directory>${basedir}/src/main/resources/schemas</directory>
+										<!-- Defaults to schemaIncludes. -->
+										<includes>
+											<!--<include>*.xsd</include> -->
+											<include>IngestedDataStatistics.wsdl</include>
+										</includes>
+									</fileset>
+								</schema>
+							</schemas>
+						</configuration>
+					</execution>
+					<execution>
+						<id>controlService</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<schemaLanguage>WSDL</schemaLanguage>
+							<generatePackage>org.openwis.controlservice.client</generatePackage>
+							<generateDirectory>${project.build.directory}/generated-sources/controlservice</generateDirectory>
+							<schemas>
+								<!--<schema><url>http://wsf.cdyne.com/WeatherWS/Weather.asmx?wsdl</url></schema> -->
+								<schema>
+									<fileset>
+										<!-- Defaults to schemaDirectory. -->
+										<directory>${basedir}/src/main/resources/schemas</directory>
+										<!-- Defaults to schemaIncludes. -->
+										<includes>
+											<!--<include>*.xsd</include> -->
+											<include>ControlService.wsdl</include>
+										</includes>
+									</fileset>
+								</schema>
+							</schemas>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	<properties>
+		<rootProjectDir>${basedir}/..</rootProjectDir>
+	</properties>
+</project>

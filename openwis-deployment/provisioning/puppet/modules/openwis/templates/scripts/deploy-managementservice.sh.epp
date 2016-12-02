@@ -1,0 +1,24 @@
+#!/bin/bash
+
+. $(dirname $(realpath $0))/setenv.sh
+
+export SOURCE_MANAGEMENTSERVICE_EAR=<%= $source_managementservice_ear %>
+
+# check if the touch file exists & exit if appropriate
+export TOUCH_FILE=<%= $touch_file %>
+test -f ${TOUCH_FILE} && exit
+
+#===============================================================================
+# ensure that JBoss is running
+#===============================================================================
+wait_for_service http://localhost:9999
+
+#===============================================================================
+# deploy Management Service EAR
+#===============================================================================
+get_file ${SOURCE_MANAGEMENTSERVICE_EAR} overwrite
+MANAGEMENTSERVICE_EAR_FILE=${SOURCE_MANAGEMENTSERVICE_EAR##*/}
+jboss_cli -c --command="deploy ${DOWNLOADS_DIR}/${MANAGEMENTSERVICE_EAR_FILE}"
+
+# create the touchfile to ensure that this script is only run once
+touch_file ${TOUCH_FILE} "OpenWIS Management Service deployed"

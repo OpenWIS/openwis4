@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans default-lazy-init="true"
+	xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:sws="http://www.springframework.org/schema/web-services"
+	xmlns:oxm="http://www.springframework.org/schema/oxm" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/web-services
+        http://www.springframework.org/schema/web-services/web-services-2.0.xsd
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-3.2.xsd
+        http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm-1.5.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+	<context:component-scan base-package="org.openwis" />
+
+    <context:property-placeholder location="WEB-INF/config-openwis/openwis.properties" file-encoding="UTF-8" ignore-unresolvable="true" order="1"/>
+
+	<!-- Initialize clients -->
+    <bean class="org.openwis.subscription.client.SubscriptionClient">
+        <property name="webServiceTemplate" ref="subscriptionWebServiceTemplate" />
+    </bean>
+
+    <bean class="org.openwis.request.client.RequestClient">
+        <property name="webServiceTemplate" ref="requestWebServiceTemplate" />
+    </bean>
+
+    <bean class="org.openwis.processedrequest.client.ProcessedRequestClient">
+        <property name="webServiceTemplate" ref="processedRequestWebServiceTemplate" />
+    </bean>
+
+	<bean class="org.openwis.blacklist.client.BlacklistClient">
+		<property name="webServiceTemplate" ref="blackListWebServiceTemplate" />
+	</bean>
+
+	<bean class="org.openwis.products.client.ProductMetadataClient">
+		<property name="webServiceTemplate" ref="productWebServiceTemplate" />
+	</bean>
+
+    <bean class="org.openwis.monitoring.client.DisseminatedDataStatisticsClient">
+        <property name="webServiceTemplate" ref="disseminatedDataStatisticsWebServiceTemplate" />
+    </bean>
+
+    <bean class="org.openwis.monitoring.client.ExchangedDataStatisticsClient">
+        <property name="webServiceTemplate" ref="exchangedDataStatisticsWebServiceTemplate" />
+    </bean>
+
+    <bean class="org.openwis.monitoring.client.ReplicatedDataStatisticsClient">
+        <property name="webServiceTemplate" ref="replicatedDataStatisticsWebServiceTemplate" />
+    </bean>
+
+    <bean class="org.openwis.monitoring.client.IngestedDataStatisticsClient">
+        <property name="webServiceTemplate" ref="ingestedDataStatisticsWebServiceTemplate" />
+    </bean>
+
+	<bean class="org.openwis.cacheindex.client.CacheIndexClient">
+		<property name="webServiceTemplate" ref="cacheWebServiceTemplate" />
+	</bean>
+
+  <bean class="org.openwis.controlservice.client.ControlServiceClient">
+    <property name="webServiceTemplate" ref="controlServiceWebServiceTemplate" />
+  </bean>
+
+  <!-- Initialize marshallers (one for each client) -->
+	<oxm:jaxb2-marshaller id="cacheMarshaller"
+		contextPath="org.openwis.cacheindex.client" />
+
+    <oxm:jaxb2-marshaller id="disseminatedDataStatisticsMarshaller"
+        contextPath="org.openwis.disseminatedDataStatistics.client" />
+
+    <oxm:jaxb2-marshaller id="exchangedDataStatisticsMarshaller"
+        contextPath="org.openwis.exchangedDataStatistics.client" />
+
+    <oxm:jaxb2-marshaller id="replicatedDataStatisticsMarshaller"
+        contextPath="org.openwis.replicatedDataStatistics.client" />
+
+    <oxm:jaxb2-marshaller id="ingestedDataStatisticsMarshaller"
+        contextPath="org.openwis.ingestedDataStatistics.client" />
+
+	<oxm:jaxb2-marshaller id="blacklistMarshaller"
+		contextPath="org.openwis.blacklist.client" />
+
+	<oxm:jaxb2-marshaller id="productmarshaller"
+		contextPath="org.openwis.products.client" />
+
+    <oxm:jaxb2-marshaller id="subscriptionmarshaller"
+        contextPath="org.openwis.subscription.client" />
+
+    <oxm:jaxb2-marshaller id="requestmarshaller"
+        contextPath="org.openwis.request.client" />
+
+    <oxm:jaxb2-marshaller id="processedRequestmarshaller"
+        contextPath="org.openwis.processedrequest.client" />
+
+  <oxm:jaxb2-marshaller id="controlservicemarshaller"
+    contextPath="org.openwis.controlservice.client" />
+
+	<!-- Initialize webServiceTemplates (one for each client) -->
+	<bean id="cacheWebServiceTemplate" class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="messageFactory" />
+		<property name="marshaller" ref="cacheMarshaller" />
+		<property name="unmarshaller" ref="cacheMarshaller" />
+		<property name="defaultUri"
+			value="${openwis.data_services_base_url}/openwis-dataservice-cache-ejb/CacheIndexWebService?wsdl" />
+	</bean>
+
+	<bean id="blackListWebServiceTemplate" class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="messageFactory" />
+		<property name="marshaller" ref="blacklistMarshaller" />
+		<property name="unmarshaller" ref="blacklistMarshaller" />
+		<property name="defaultUri"
+			value="${openwis.data_services_base_url}/openwis-dataservice-server-ejb/BlacklistService/BlacklistService?wsdl" />
+	</bean>
+
+	<bean id="productWebServiceTemplate" class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="messageFactory" />
+		<property name="marshaller" ref="productmarshaller" />
+		<property name="unmarshaller" ref="productmarshaller" />
+		<property name="defaultUri"
+			value="${openwis.data_services_base_url}/openwis-dataservice-server-ejb/ProductMetadataService/ProductMetadataService?wsdl" />
+	</bean>
+
+    <bean id="subscriptionWebServiceTemplate" class="org.springframework.ws.client.core.WebServiceTemplate">
+        <constructor-arg ref="messageFactory" />
+        <property name="marshaller" ref="subscriptionmarshaller" />
+        <property name="unmarshaller" ref="subscriptionmarshaller" />
+        <property name="defaultUri"
+            value="${openwis.data_services_base_url}/openwis-dataservice-server-ejb/SubscriptionService/SubscriptionService?wsdl" />
+    </bean>
+
+    <bean id="requestWebServiceTemplate" class="org.springframework.ws.client.core.WebServiceTemplate">
+        <constructor-arg ref="messageFactory" />
+        <property name="marshaller" ref="requestmarshaller" />
+        <property name="unmarshaller" ref="requestmarshaller" />
+        <property name="defaultUri"
+            value="${openwis.data_services_base_url}/openwis-dataservice-server-ejb/RequestService/RequestService?wsdl" />
+    </bean>
+
+    <bean id="processedRequestWebServiceTemplate" class="org.springframework.ws.client.core.WebServiceTemplate">
+        <constructor-arg ref="messageFactory" />
+        <property name="marshaller" ref="processedRequestmarshaller" />
+        <property name="unmarshaller" ref="processedRequestmarshaller" />
+        <property name="defaultUri"
+            value="${openwis.data_services_base_url}/openwis-dataservice-server-ejb/ProcessedRequestService/ProcessedRequestService?wsdl" />
+    </bean>
+
+	<bean id="disseminatedDataStatisticsWebServiceTemplate" class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="messageFactory" />
+		<property name="marshaller" ref="disseminatedDataStatisticsMarshaller" />
+		<property name="unmarshaller" ref="disseminatedDataStatisticsMarshaller" />
+		<property name="defaultUri"
+			value="${openwis.data_services_base_url}/openwis-management-service-ejb/DisseminatedDataStatistics/DisseminatedDataStatistics?wsdl" />
+	</bean>
+
+	<bean id="exchangedDataStatisticsWebServiceTemplate" class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="messageFactory" />
+		<property name="marshaller" ref="exchangedDataStatisticsMarshaller" />
+		<property name="unmarshaller" ref="exchangedDataStatisticsMarshaller" />
+		<property name="defaultUri"
+			value="${openwis.data_services_base_url}/openwis-management-service-ejb/ExchangedDataStatistics/ExchangedDataStatistics?wsdl" />
+	</bean>
+
+	<bean id="replicatedDataStatisticsWebServiceTemplate" class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="messageFactory" />
+		<property name="marshaller" ref="replicatedDataStatisticsMarshaller" />
+		<property name="unmarshaller" ref="replicatedDataStatisticsMarshaller" />
+		<property name="defaultUri"
+			value="${openwis.data_services_base_url}/openwis-management-service-ejb/ReplicatedDataStatistics/ReplicatedDataStatistics?wsdl" />
+	</bean>
+
+	<bean id="ingestedDataStatisticsWebServiceTemplate" class="org.springframework.ws.client.core.WebServiceTemplate">
+		<constructor-arg ref="messageFactory" />
+		<property name="marshaller" ref="ingestedDataStatisticsMarshaller" />
+		<property name="unmarshaller" ref="ingestedDataStatisticsMarshaller" />
+		<property name="defaultUri"
+			value="${openwis.data_services_base_url}/openwis-management-service-ejb/IngestedDataStatistics/IngestedDataStatistics?wsdl" />
+	</bean>
+
+  <bean id="controlServiceWebServiceTemplate" class="org.springframework.ws.client.core.WebServiceTemplate">
+    <constructor-arg ref="messageFactory" />
+    <property name="marshaller" ref="controlservicemarshaller" />
+    <property name="unmarshaller" ref="controlservicemarshaller" />
+    <property name="defaultUri"
+              value="${openwis.data_services_base_url}/openwis-management-service-ejb/ControlService/ControlService?wsdl" />
+  </bean>
+
+	<!-- Common message factory -->
+	<bean id="messageFactory" class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory" />
+
+
+</beans>

@@ -1,0 +1,11 @@
+<IfModule dir_module>
+  DirectoryIndex /geonetwork
+</IfModule>
+
+<IfModule mod_proxy.c>
+  ProxyPreserveHost On
+
+	# Proxy for Portal
+	ProxyPass        /geonetwork http://<%= $portal_server_host_name %>:8080/geonetwork
+	ProxyPassReverse /geonetwork http://<%= $portal_server_host_name %>:8080/geonetwork
+</IfModule>

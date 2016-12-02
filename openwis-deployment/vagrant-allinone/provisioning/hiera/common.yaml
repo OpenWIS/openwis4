@@ -1,0 +1,25 @@
+---
+openwis::touch_files_dir: /home/vagrant/touchfiles
+
+# Source artifacts for "local" deployment
+openwis::data_services::source_config_module:         /tmp/openwis_workspace/openwis-dataservice/openwis-dataservice-config/target/openwis-dataservice-config-module.zip
+openwis::data_services::source_managementservice_ear: /tmp/openwis_workspace/openwis-management/openwis-management-service/openwis-management-service-ear/target/openwis-management-service.ear
+openwis::data_services::source_dataservice_ear:       /tmp/openwis_workspace/openwis-dataservice/openwis-dataservice-server/openwis-dataservice-server-ear/target/openwis-dataservice.ear
+openwis::portal::source_portal_war:                   /tmp/portal_workspace/openwis-war/target/geonetwork.war
+openwis::staging_post::source_staging_post_war:       /tmp/openwis_workspace/openwis-stagingpost/target/stagingPost.war
+
+# Source artifacts for "remote" deployment
+#openwis::data_services::source_config_module:         http://repository-openwis-association.forge.cloudbees.com/openwis/3.14.5/openwis-dataservice-config-module.zip
+#openwis::data_services::source_managementservice_ear: http://repository-openwis-association.forge.cloudbees.com/openwis/3.14.5/openwis-management-service.ear
+#openwis::data_services::source_dataservice_ear:       http://repository-openwis-association.forge.cloudbees.com/openwis/3.14.5/openwis-dataservice.ear
+#openwis::portal::source_portal_war:                   https://sourceforge.net/projects/geonetwork/files/GeoNetwork_opensource/v3.0.4/geonetwork.war/download
+#openwis::staging_post::source_staging_post_war:       http://repository-openwis-association.forge.cloudbees.com/openwis/3.14.5/stagingPost.war
+
+# PostgreSQL JDBC driver
+openwis::data_services::source_jdbc_driver_jar: http://repository-openwis-association.forge.cloudbees.com/private/binaries/postgresql-9.2-1004.jdbc41.jar
+
+# Server host names
+openwis::db_server_host_name:           ow4dev
+openwis::data_server_host_name:         ow4dev
+openwis::portal_server_host_name:       ow4dev
+openwis::staging_post_server_host_name: ow4dev

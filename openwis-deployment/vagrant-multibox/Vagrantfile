@@ -1,0 +1,90 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+require 'yaml'
+
+config 		= YAML.load_file 'config.yaml'
+host_config	= config['host']
+
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "openwis/centos7"
+
+  #=============================================================================
+  # Common configuration
+  #=============================================================================
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = 2048
+    vb.cpus = 2
+  end
+
+  config.vm.synced_folder host_config['openwis_workspace'], "/tmp/openwis_workspace"
+
+  config.vm.provision "puppet", run: "always" do |vagrant_common|
+    vagrant_common.manifest_file     = "vagrant.pp"
+    vagrant_common.manifests_path    = "provisioning/manifests"
+    vagrant_common.hiera_config_path = "provisioning/hiera.yaml"
+    vagrant_common.options           = "--strict_variables --parser future"
+  end
+
+  config.vm.provision "puppet" do |openwis|
+    openwis.manifest_file     = "openwis.pp"
+    openwis.manifests_path    = "provisioning/manifests"
+    openwis.module_path       = "../provisioning/puppet/modules"
+    openwis.hiera_config_path = "provisioning/hiera.yaml"
+    openwis.options           = "--strict_variables --parser future"
+  end
+
+  #=============================================================================
+  # Database Server configuration
+  #=============================================================================
+  config.vm.define "db" do |db|
+    db.vm.hostname = "ow4dev-db"
+
+    db.vm.network "private_network", ip: "192.168.54.101"
+
+    # PostgreSQL port
+    db.vm.network "forwarded_port", guest: 5432, host: 15432, host_ip: "localhost"
+
+    db.vm.synced_folder "ow4dev-db/logs", "/home/openwis/logs", create: true, owner: "openwis", group: "openwis"
+    db.vm.synced_folder "ow4dev-db/openwis", "/var/opt/openwis", create: true, owner: "openwis", group: "openwis"
+  end
+
+  #=============================================================================
+  # Data Services Server configuration
+  #=============================================================================
+  config.vm.define "data" do |data|
+    data.vm.hostname = "ow4dev-data"
+
+    data.vm.network "private_network", ip: "192.168.54.102"
+
+    # JBoss Web Access (will be disabled once everything works)
+    data.vm.network "forwarded_port", guest: 8180, host: 18180, host_ip: "localhost"
+    # JBoss Admin Console
+    data.vm.network "forwarded_port", guest: 9990, host: 19990, host_ip: "localhost"
+    # JBoss remote debug
+    data.vm.network "forwarded_port", guest: 8787, host: 18787, host_ip: "localhost"
+
+    data.vm.synced_folder "ow4dev-data/logs", "/home/openwis/logs", create: true, owner: "openwis", group: "openwis"
+    data.vm.synced_folder "ow4dev-data/openwis", "/var/opt/openwis", create: true, owner: "openwis", group: "openwis"
+  end
+
+  #=============================================================================
+  # Portal Server configuration
+  #=============================================================================
+  config.vm.define "portal" do |portal|
+    portal.vm.hostname = "ow4dev-portal"
+
+    portal.vm.network "private_network", ip: "192.168.54.103"
+
+    # Portal Web Access (will switch to Apache when configured)
+    portal.vm.network "forwarded_port", guest: 80, host: 10080, host_ip: "localhost"
+    # Tomcat remote debug
+    portal.vm.network "forwarded_port", guest: 8000, host: 18000, host_ip: "localhost"
+
+    portal.vm.synced_folder host_config['portal_workspace'], "/tmp/portal_workspace"
+    portal.vm.synced_folder "ow4dev-portal/logs", "/home/openwis/logs", create: true, owner: "openwis", group: "openwis"
+    portal.vm.synced_folder "ow4dev-portal/openwis", "/var/opt/openwis", create: true, owner: "openwis", group: "openwis"
+    
+  end
+end

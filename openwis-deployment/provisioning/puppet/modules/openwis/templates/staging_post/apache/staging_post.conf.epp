@@ -1,0 +1,7 @@
+<IfModule mod_proxy.c>
+  ProxyPreserveHost On
+
+	# Proxy for Portal
+	ProxyPass        /stagingPost http://<%= $staging_post_server_host_name %>:8080/stagingPost
+	ProxyPassReverse /stagingPost http://<%= $staging_post_server_host_name %>:8080/stagingPost
+</IfModule>

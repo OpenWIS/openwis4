@@ -1,0 +1,49 @@
+#!/bin/bash
+
+. $(dirname $(realpath $0))/setenv.sh
+
+export SOURCE_CONFIG_MODULE=<%= $source_config_module %>
+export SOURCE_JDBC_DRIVER_JAR=<%= $source_jdbc_driver_jar %>
+export JBOSS_AS_DIR=<%= $jboss_as_dir %>
+
+# check if the touch file exists & exit if appropriate
+export TOUCH_FILE=<%= $touch_file %>
+#test -f ${TOUCH_FILE} && exit
+
+#===============================================================================
+# ensure that JBoss is running
+#===============================================================================
+wait_for_service http://localhost:9999
+
+#===============================================================================
+# install OpenWIS configuration module
+#===============================================================================
+get_file ${SOURCE_CONFIG_MODULE} overwrite
+CONFIG_MODULE_FILE=${SOURCE_CONFIG_MODULE##*/}
+test -d ${JBOSS_AS_DIR}/modules/org/openwis/dataservice/config && rm -rf ${JBOSS_AS_DIR}/modules/org/openwis/dataservice/config
+as_openwis unzip -q ${DOWNLOADS_DIR}/${CONFIG_MODULE_FILE} -d ${JBOSS_AS_DIR}/modules
+
+#===============================================================================
+# deploy the PostgreSQL JDBC driver (requires restart)
+#===============================================================================
+get_file ${SOURCE_JDBC_DRIVER_JAR} no-overwrite
+JDBC_DRIVER_JAR=${SOURCE_JDBC_DRIVER_JAR##*/}
+jboss_cli -c --command="deploy --force ${DOWNLOADS_DIR}/${JDBC_DRIVER_JAR}"
+
+#===============================================================================
+# restart JBoss
+#===============================================================================
+as_root systemctl restart jboss-as.service
+
+#===============================================================================
+# wait for JBoss to re-start
+#===============================================================================
+wait_for_service http://localhost:9999
+
+#===============================================================================
+# run the OpenWIS JBoss configuration script
+#===============================================================================
+jboss_cli -c --file=${SCRIPTS_DIR}/configure-jboss.cli
+
+# create the touchfile to ensure that this script is only run once
+touch_file ${TOUCH_FILE} "JBoss configured for OpenWIS"

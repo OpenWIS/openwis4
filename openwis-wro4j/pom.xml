@@ -1,0 +1,161 @@
+ 
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.geonetwork-opensource</groupId>
+		<artifactId>openwis-parent</artifactId>
+		<version>4.0.0-SNAPSHOT</version>
+		<relativePath>../openwis-parent/pom.xml</relativePath>
+	</parent>
+
+	<artifactId>openwis-wro4j</artifactId>
+	<packaging>jar</packaging>
+	<description>Extension of the orginal CGN wro4j module</description>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>ro.isdc.wro4j</groupId>
+			<artifactId>wro4j-maven-plugin</artifactId>
+			<version>${wro.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>ro.isdc.wro4j</groupId>
+			<artifactId>wro4j-extensions</artifactId>
+			<version>${wro.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.jruby</groupId>
+					<artifactId>jruby-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>me.n4u.sass</groupId>
+					<artifactId>sass-gems</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.codehaus.gmaven.runtime</groupId>
+					<artifactId>gmaven-runtime-1.7</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-web</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.github.lltyk</groupId>
+					<artifactId>dojo-shrinksafe</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.github.sommeri</groupId>
+			<artifactId>less4j</artifactId>
+			<version>1.8.4</version>
+			<exclusions>
+				<!-- <exclusion>
+					<groupId>org.antlr</groupId>
+					<artifactId>antlr-runtime</artifactId>
+				</exclusion> -->
+				<exclusion>
+					<groupId>commons-beanutils</groupId>
+					<artifactId>commons-beanutils</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.json</groupId>
+					<artifactId>json</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>c3p0</groupId>
+			<artifactId>c3p0</artifactId>
+			<version>0.9.1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+		</dependency>
+		<dependency>
+      		<groupId>com.fasterxml.jackson.core</groupId>
+	      	<artifactId>jackson-databind</artifactId>
+	      	<version>2.5.2</version>
+	    </dependency>
+	    <dependency>
+      		<groupId>org.slf4j</groupId>
+	      	<artifactId>jcl-over-slf4j</artifactId>
+	      	<version>1.7.7</version>
+	    </dependency>
+	    <dependency>
+		    <groupId>org.jdom</groupId>
+		    <artifactId>jdom</artifactId>
+		    <version>1.1.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.5</version>
+		</dependency>
+		<!-- <dependency>
+      		<groupId>org.mapfish.print</groupId>
+	      	<artifactId>print-lib</artifactId>
+	      	<version>${print-lib.version}</version>
+	    </dependency> -->
+		<!-- <dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-render</artifactId>
+			<version>8.6</version>
+		</dependency> -->
+		<dependency>
+			<groupId>org.geonetwork-opensource</groupId>
+			<artifactId>core</artifactId>
+		</dependency>
+	</dependencies>
+
+	<profiles>
+		<profile>
+			<id>run-static-analysis</id>
+			<activation>
+				<property>
+					<name>!skipTests</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>findbugs-maven-plugin</artifactId>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+	<properties>
+		<rootProjectDir>${basedir}/..</rootProjectDir>
+	</properties>
+</project>

@@ -1,0 +1,41 @@
+<div class="row"
+	data-ng-controller="gnOpenwisAdminSubscriptionController">
+	<div class="col-lg-12">
+		<div class="panel panel-default">
+			<div class="panel-heading" data-translate="">subscriptions-mine</div>
+			<div class="panel-body">
+				<input type="hidden" data-ng-model="myself" name="myself"
+					value="true" />
+				<table data-datatable data-dt-options="dtOptions"
+					data-dt-columns="dtColumns" data-dt-instance="dtInstance">
+					<thead>
+						<tr>
+							<th data-translate="">Id</th>
+							<th data-translate="">Title</th>
+							<th data-translate="">User</th>
+							<th data-translate="">Urn</th>
+							<th data-translate="">Status</th>
+							<th data-translate="">Backup</th>
+							<th data-translate="">Starting Date</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tfoot>
+						<tr>
+							<th data-translate="">Id</th>
+							<th data-translate="">Title</th>
+							<th data-translate="">User</th>
+							<th data-translate="">Urn</th>
+							<th data-translate="">Status</th>
+							<th data-translate="">Backup</th>
+							<th data-translate="">Starting Date</th>
+							<th></th>
+						</tr>
+					</tfoot>
+				</table>
+			</div>
+		</div>
+	</div>
+	<ng-include
+		src="'../../catalog/components/subscriptions/partials/request.html'"></ng-include>
+</div>

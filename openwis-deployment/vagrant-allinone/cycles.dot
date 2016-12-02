@@ -1,0 +1,4 @@
+digraph Resource_Cycles {
+  label = "Resource Cycles"
+"File[/etc/httpd/conf.d/openwis_portal.conf]" -> "Service[httpd]" -> "Class[Openwis::Middleware::Httpd]" -> "Class[Openwis::Portal_proxy]" -> "Openwis::Middleware::Httpd::Conf_file[openwis_portal.conf]" -> "File[/etc/httpd/conf.d/openwis_portal.conf]"
+}

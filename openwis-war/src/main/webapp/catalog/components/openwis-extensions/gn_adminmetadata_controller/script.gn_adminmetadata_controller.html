@@ -1,0 +1,123 @@
+
+<script type="text/javascript">
+
+	/**
+	 * Add new angular dependencies
+	 */
+	angular.module('gn_adminmetadata_controller').requires.push('gn_openwis_productmetadata_controller','gn_openwis_admin_subscription_controller');
+			
+	/**
+	 * This is the extended controller that will replace the original one
+	 * 
+	 */
+	
+	angular.module('gn_adminmetadata_controller').controller('EXT_GnAdminMetadataController', [
+	    '$scope', '$routeParams', '$http', '$rootScope', '$translate', '$compile', '$controller',
+	    'gnSearchManagerService', 'gnUtilityService',
+	    function($scope, $routeParams, $http, $rootScope, $translate, $compile, $controller, 
+	            gnSearchManagerService, gnUtilityService) {
+	    	
+	    	angular.extend(this, $controller('GnAdminMetadataController', {
+	            $scope : $scope,
+	            $routeParams : $routeParams,
+	            $http : $http,
+	            $rootScope : $rootScope,
+	            $translate : $translate,
+	            $compile : $compile,
+	            gnSearchManagerService : gnSearchManagerService,
+	            gnUtilityService : gnUtilityService
+	          }));
+	    	
+	    	$scope.pageMenu = {
+	    	        folder: 'metadata/',
+	    	        defaultTab: 'metadata-and-template',
+	    	        tabs:
+	    	            [{
+	    	              	type: 'metadata-and-template',
+	    	              	label: 'metadataAndTemplates',
+	    	              	icon: 'fa-archive',
+	    	              	href: '#/metadata/metadata-and-template'
+	    	            },{
+	    	             	type: 'formatter',
+	    	              	label: 'metadataFormatter',
+	    	              	icon: 'fa-eye',
+	    	              	href: '#/metadata/formatter'
+	    	            },{
+							type: 'subscriptions-admin',
+							label: 'Manage Subscriptions',
+							icon: 'fa-rss',
+							href: '#/metadata/subscriptions-admin'
+						},{
+							type: 'product-metadata',
+							label: 'Product Metadata',
+							icon: 'fa-check',
+							href: '#/metadata/product-metadata'
+						},{
+	    	              	type: 'schematron',
+	    	              	label: 'schematron',
+	    	              	icon: 'fa-check',
+	    	              	href: '#/metadata/schematron'
+	    	            },{
+	    	              	type: 'metadata-identifier-templates',
+	    	              	icon: 'fa-key',
+	    	              	label: 'manageMetadataIdentifierTemplates',
+	    	              	href: '#/metadata/metadata-identifier-templates'
+	    	            }]
+	    	      };
+	    	
+	    function loadSchemas() {
+            	$http.get('admin.schema.list?_content_type=json').
+	                success(function(data) {
+	                  for (var i = 0; i < data.length; i++) {
+	                    $scope.schemas.push(data[i]['#text'].trim());
+	                  }
+	                  $scope.schemas.sort();
+	
+	                  // Trigger load action according to route params
+	                  launchActions();
+                });
+          	}
+	    	
+	    	$scope.loadTemplates = function() {
+	            $scope.tplLoadRunning = true;
+	            $http.get('admin.load.templates?_content_type=json&schema=' +
+	                $scope.selectedSchemas.join(',')
+	            ).success(function(data) {
+	              $scope.loadTplReport = data;
+	              $scope.tplLoadRunning = false;
+	            }).error(function(data) {
+	              $scope.tplLoadRunning = false;
+	            });
+	          };
+
+	          $scope.loadSamples = function() {
+	            $scope.sampleLoadRunning = true;
+	            $http.get('admin.load.samples?_content_type=json&' +
+	                      'file_type=mef&uuidAction=overwrite' +
+	                      '&schema=' +
+	                $scope.selectedSchemas.join(',')
+	            ).success(function(data) {
+	              $scope.loadReport = data;
+	              $scope.sampleLoadRunning = false;
+	            }).error(function(data) {
+	              $scope.sampleLoadRunning = false;
+	            });
+	          };
+	          
+	          var loadTemplates = function() {
+	              $http.get('admin.templates.list?_content_type=json')
+	              .success(function(data) {
+	                    $scope.templates = data;
+	                  });
+	            };
+	    	
+    }]);
+	
+	/**
+	 * Register the replacement
+	 * 
+	 */
+	JsUtil.registerReplacementController('GnAdminMetadataController','EXT_GnAdminMetadataController');
+
+	
+</script>

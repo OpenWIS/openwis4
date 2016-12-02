@@ -1,0 +1,46 @@
+#!/bin/bash
+
+. $(dirname $(realpath $0))/setenv.sh
+
+export POSTGIS_DIR=<%= $postgis_dir %>
+
+# check if the touch file exists & exit if appropriate
+export TOUCH_FILE=<%= $touch_file %>
+test -f ${TOUCH_FILE} && exit
+
+# install the PostgreSQL admin pack
+as_postgres psql -c 'CREATE EXTENSION adminpack;'
+
+# install the PostGIS extensions
+as_postgres psql -c 'CREATE EXTENSION postgis;'
+as_postgres psql -c 'CREATE EXTENSION postgis_topology;'
+as_postgres psql -c 'CREATE EXTENSION ogr_fdw;'
+as_postgres psql -c 'CREATE EXTENSION pgrouting;'
+
+# create the OpenWIS & GeoNetwork databases
+as_postgres createdb OpenWIS
+as_postgres createdb GeoNetwork
+
+# install the OpenWIS citext extensions
+as_postgres psql -f ${CONFIG_SRC_DIR}/database/citext.sql
+as_postgres psql -d OpenWIS -f ${CONFIG_SRC_DIR}/database/citext.sql
+
+# create the openwis user role
+as_postgres psql -f ${CONFIG_SRC_DIR}/database/openwis-roles.sql
+
+# create the PostGIS tables
+as_openwis psql -d OpenWIS -f ${POSTGIS_DIR}/postgis.sql
+as_openwis psql -d OpenWIS -f ${POSTGIS_DIR}/postgis_comments.sql
+as_openwis psql -d OpenWIS -f ${POSTGIS_DIR}/spatial_ref_sys.sql
+as_openwis psql -d OpenWIS -f ${POSTGIS_DIR}/legacy.sql
+
+# create the OpenWIS database
+as_openwis psql -d OpenWIS -f ${CONFIG_SRC_DIR}/database/schema.ddl
+as_openwis psql -d OpenWIS -f ${CONFIG_SRC_DIR}/database/purge.sql
+as_openwis psql -d OpenWIS -f ${CONFIG_SRC_DIR}/database/openwis-3.14.sql
+as_openwis psql -d OpenWIS -f ${CONFIG_SRC_DIR}/database/create-postgis-spatialindex.sql
+as_openwis psql -d OpenWIS -f ${CONFIG_SRC_DIR}/database/create_db-postgres.sql
+as_openwis psql -d OpenWIS -f ${CONFIG_SRC_DIR}/database/data-db-postgres.sql
+
+# create the touchfile to ensure that this script is only run once
+touch_file ${TOUCH_FILE} "OpenWIS database initialised"

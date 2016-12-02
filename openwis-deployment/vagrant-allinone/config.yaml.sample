@@ -1,0 +1,4 @@
+---
+host:
+  openwis_workspace: D:/Projects/OpenWIS/code/openwis
+  portal_workspace:  D:/Projects/OpenWIS/code/core-geonetwork
