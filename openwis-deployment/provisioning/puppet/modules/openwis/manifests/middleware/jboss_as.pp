@@ -83,9 +83,6 @@ class openwis::middleware::jboss_as (
   #==============================================================================
   # manage folders & links
   #==============================================================================
-  notice("**** Setting up JBOSS files")
-
-
   file { "${jboss_logs_dir}":
     ensure  => directory,
   } ->
@@ -117,5 +114,4 @@ class openwis::middleware::jboss_as (
       refreshonly => true
     }
 
-    notice("**** JBOSS done")
 }

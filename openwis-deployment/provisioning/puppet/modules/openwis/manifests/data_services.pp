@@ -1,5 +1,4 @@
 class openwis::data_services (
-  $source_config_module,
   $source_managementservice_ear,
   $source_dataservice_ear,
   $source_jdbc_driver_jar,
@@ -21,8 +20,6 @@ class openwis::data_services (
   $db_user_password    = $openwis::db_user_password
   $jdbc_driver_jar     = regsubst("${source_jdbc_driver_jar}", '^.*/(.*)$', '\1')
 
-
-  notice("**** Starting data_services.pp")
 
   # default attributes
   File {
@@ -59,7 +56,6 @@ class openwis::data_services (
     require => File[["/home/openwis", "${openwis_opt_dir}"]]
   }
 
-  notice("**** folders exist done")
 
   #==============================================================================
   # OpenWIS configuration files
@@ -79,18 +75,15 @@ class openwis::data_services (
     content => file("openwis/data_service/conf/localdatasourceservice.properties")
   }
 
-  notice("**** config files done")
 
   #==============================================================================
   # configure JBoss
   #==============================================================================
-  notice("**** jboss config start")
   file { "${scripts_dir}/configure-jboss.sh":
     ensure  => file,
     mode    => "0774",
     content => dos2unix(epp("openwis/scripts/configure-jboss.sh", {
         touch_file             => "${touch_files_dir}/jboss-configured",
-        source_config_module   => $source_config_module,
         source_jdbc_driver_jar => $source_jdbc_driver_jar,
         jboss_as_dir           => $jboss_as_dir
       })),
@@ -112,8 +105,6 @@ class openwis::data_services (
     creates => "${touch_files_dir}/jboss-configured"
   }
 
-  notice("**** scripts_dir = ${scripts_dir}")
-  notice("**** jboss config done")
 
   #==============================================================================
   # deploy Management Service
