@@ -53,7 +53,7 @@ class openwis::middleware::jboss_as (
   } ->
   file_line { "standalone.conf: extra JAVA_OPTS":
     path => "${jboss_as_dir}/bin/standalone.conf",
-    line => 'JAVA_OPTS="$JAVA_OPTS -Duser.timezone=UTC -Djboss.bind.address=0.0.0.0"'
+    line => 'JAVA_OPTS="$JAVA_OPTS -Duser.timezone=UTC -Djboss.bind.address=0.0.0.0 -Djboss.bind.address.management=192.168.54.102"'
   } ->
   file { "/etc/systemd/system/jboss-as.service":
     ensure  => file,
