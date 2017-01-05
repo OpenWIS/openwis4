@@ -78,5 +78,4 @@ class openwis::database ()
     creates => "${touch_files_dir}/db-initialised",
   }
 
-  notice("**** database.pp done")
 }
