@@ -53,7 +53,7 @@ class openwis::middleware::jboss_as (
   } ->
   file_line { "standalone.conf: extra JAVA_OPTS":
     path => "${jboss_as_dir}/bin/standalone.conf",
-    line => 'JAVA_OPTS="$JAVA_OPTS -Duser.timezone=UTC -Djboss.bind.address=0.0.0.0 -Djboss.bind.address.management=192.168.54.102"'
+    line => 'JAVA_OPTS="$JAVA_OPTS -Duser.timezone=UTC -Djboss.bind.address=0.0.0.0 -Djboss.bind.address.management=127.0.0.1"'
   } ->
   file { "/etc/systemd/system/jboss-as.service":
     ensure  => file,
@@ -73,7 +73,7 @@ class openwis::middleware::jboss_as (
     notify  => Service["jboss-as"]
   } ->
   exec { "set-http-port":
-    command => 'jboss-cli.sh -c --command="/socket-binding-group="standard-sockets"/socket-binding="http":write-attribute(name="port",value=8180)"',
+    command => 'jboss-cli.sh -c --controller=127.0.0.1:9999 --command="/socket-binding-group="standard-sockets"/socket-binding="http":write-attribute(name="port",value=8180)"',
     unless => "grep 8180 ${jboss_as_dir}/standalone/configuration/standalone-full.xml",
     path    => ["${jboss_as_dir}/bin", $::path],
     require => Service["jboss-as"],
