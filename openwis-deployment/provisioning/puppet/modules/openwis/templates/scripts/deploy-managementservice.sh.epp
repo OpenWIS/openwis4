@@ -11,14 +11,14 @@ test -f ${TOUCH_FILE} && exit
 #===============================================================================
 # ensure that JBoss is running
 #===============================================================================
-wait_for_service http://localhost:9999
+wait_for_service http://127.0.0.1:9999
 
 #===============================================================================
 # deploy Management Service EAR
 #===============================================================================
 get_file ${SOURCE_MANAGEMENTSERVICE_EAR} overwrite
 MANAGEMENTSERVICE_EAR_FILE=${SOURCE_MANAGEMENTSERVICE_EAR##*/}
-jboss_cli -c --command="deploy ${DOWNLOADS_DIR}/${MANAGEMENTSERVICE_EAR_FILE}"
+jboss_cli -c --controller="127.0.0.1:9999" --command="deploy ${DOWNLOADS_DIR}/${MANAGEMENTSERVICE_EAR_FILE}"
 
 # create the touchfile to ensure that this script is only run once
 touch_file ${TOUCH_FILE} "OpenWIS Management Service deployed"
