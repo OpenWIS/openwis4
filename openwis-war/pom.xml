@@ -132,6 +132,10 @@
 		</dependency>
 		<dependency>
 			<groupId>org.geonetwork-opensource</groupId>
+			<artifactId>openwis-security-saml</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.geonetwork-opensource</groupId>
 			<artifactId>web-app</artifactId>
 			<type>war</type>
 		</dependency>
