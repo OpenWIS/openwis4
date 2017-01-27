@@ -21,6 +21,7 @@
 		<module>../openwis-events</module>
 		<module>../openwis-services</module>
 		<module>../openwis-services-client</module>
+		<module>../openwis-security-saml</module>
 		<module>../openwis-war</module>
 		<module>../openwis-wro4j</module>
 	</modules>
@@ -66,6 +67,11 @@
 			<dependency>
 				<groupId>org.geonetwork-opensource</groupId>
 				<artifactId>openwis-services-client</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.geonetwork-opensource</groupId>
+				<artifactId>openwis-security-saml</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
@@ -144,12 +150,27 @@
 			<!-- Spring dependencies -->
 			<dependency>
 				<groupId>org.springframework</groupId>
+				<artifactId>spring-core</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
 				<artifactId>spring-context</artifactId>
 				<version>${spring.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-orm</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-beans</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-aop</artifactId>
 				<version>${spring.version}</version>
 			</dependency>
 			<dependency>
