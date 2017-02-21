@@ -8868,19 +8868,12 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         }
         
         
-        console.log(elementControllers);
-        
         // Initialize bindToController bindings
         for (var name in elementControllers) {
-        	console.log('name: ' + name);
-        	console.log(controllerDirectives);
           var controllerDirective = controllerDirectives[name];
           var controller = elementControllers[name];
           var bindings = controllerDirective.$$bindings.bindToController;
           
-          console.log(controller);
-          console.log(bindings);
-
           if (controller.identifier && bindings) {
             removeControllerBindingWatches =
               initializeDirectiveBindings(controllerScope, attrs, controller.instance, bindings, controllerDirective);

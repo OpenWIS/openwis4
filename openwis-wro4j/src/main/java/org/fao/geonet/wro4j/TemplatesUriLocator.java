@@ -33,7 +33,7 @@ public class TemplatesUriLocator implements UriLocator {
     @Override
     public InputStream locate(String uri) throws IOException {
     	
-    	Log.error(Geonet.GEONETWORK, "TemplatesUriLocator URI: " + uri);
+    	Log.debug(Geonet.GEONETWORK, "TemplatesUriLocator URI: " + uri);
     	
         StringBuilder javascript;
         if (uri.startsWith(URI_PREFIX_HEADER)) {

@@ -80,7 +80,7 @@ public class ClosureDependencyUriLocator implements UriLocator {
 
     @Override
     public boolean accept(String uri) {
-    	Log.info(Geonet.GEONETWORK, "ClosureDependencyUriLocator accepr URI: " + uri);
+    	Log.debug(Geonet.GEONETWORK, "ClosureDependencyUriLocator accepr URI: " + uri);
         return uri.startsWith(URI_PREFIX);
     }
 }
