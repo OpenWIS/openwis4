@@ -6,6 +6,34 @@
 function JsUtil(){};
 
 /**
+ * Angular helper object
+ */
+JsUtil.Angular = function(){};
+
+/**
+ * To be used for in-the-fly compilation
+ */
+JsUtil.Angular.Compile = null;
+
+/**
+ * This object maps a src to a function. It will be used for executing code when a route or include is loaded
+ */
+JsUtil.SrcFunctionMapping = {
+	'src': '',
+	'func': null
+}
+
+/**
+ * Holds the mappings of functions to execute when an include successfully loads.
+ */
+JsUtil.FunctionsToExecuteOnIncludeLoadSuccess = new Array();
+
+/**
+ * Holds the mappings of functions to execute when a route successfully loads.
+ */
+JsUtil.FunctionsToExecuteOnRouteLoadSuccess = new Array();
+
+/**
  * This array will be populated with functions that will be executed on document.ready
  */
 JsUtil.FunctionsToExecuteOnReady = new Array();
@@ -54,7 +82,7 @@ JsUtil.registerReplacementController = function(originalControllerName, replacem
  * This will loop through all functions registered for execution and run them.
  * Then it will clear the array. 
  */
-JsUtil.executeFunctions = function(){
+JsUtil.executeFunctionsOnReady = function(){
 	for(var i=0;i<JsUtil.FunctionsToExecuteOnReady.length;i++){
 		var f = JsUtil.FunctionsToExecuteOnReady[i];
 		f();
@@ -63,7 +91,7 @@ JsUtil.executeFunctions = function(){
 };
 
 /**
- * Loads the contents of a specific URL (absolute or relative) into a JQuery object
+ * Appends the contents of a specific URL (absolute or relative) into a JQuery element
  */
 JsUtil.appendHtmlContentIntoElement = function(jqTargetElement, url){
 	var tempDiv = $('<div></div>');
@@ -77,10 +105,143 @@ JsUtil.appendHtmlContentIntoElement = function(jqTargetElement, url){
 		jQuery.ajaxSetup({async:true});
 	});
 };
+/**
+ * Prepends the contents of a specific URL (absolute or relative) into a JQuery element
+ */
+JsUtil.prependHtmlContentIntoElement = function(jqTargetElement, url){
+	var tempDiv = $('<div></div>');
+	jQuery.ajaxSetup({async:false});
+	var elementsToPrepend = new Array();
+	tempDiv.load(url, function(){
+		tempDiv.children().each(function () {
+			//console.log('appending: ' + this.outerHTML);
+			elementsToPrepend.push($(this).clone());
+		});
+		jqTargetElement.prepend(elementsToPrepend);
+		tempDiv.remove();
+		jQuery.ajaxSetup({async:true});
+	});
+};
+
+/**
+ * Adds a function to be executed when a specific include loads successfully.
+ * The srcSegment will be matched in an "endsWith" manner. This is because the src returned by angular events
+ * usually looks like "../../dir1/dir2/dir3/dir4/file.html" and such long src may lead to errors.
+ * Using "endsWith" matching allows to only supply the segment of the filepath required to correctly identify the full src.
+ */
+JsUtil.addFunctionToExecuteOnIncludeLoadSuccess = function(srcSegment, func){
+	var mapping = Object.create(JsUtil.SrcFunctionMapping);
+	mapping.src = srcSegment;
+	mapping.func = func;
+	JsUtil.FunctionsToExecuteOnIncludeLoadSuccess.push(mapping);
+}
+
+/**
+ * This is called from an event handler. It will search if there are any registered mappings
+ * which match (using endsWith) this src, and if found, will execute the associated functions.
+ */
+JsUtil.executeOnIncludeLoadSuccess = function(src){
+	for(var i=0;i<JsUtil.FunctionsToExecuteOnIncludeLoadSuccess.length;i++){
+		var mapping = JsUtil.FunctionsToExecuteOnIncludeLoadSuccess[i];
+		if(src.endsWith(mapping.src)){
+			var func = mapping.func;
+			func();
+		}
+	}
+}
+
+/**
+ * Adds a function to be executed when a specific route loads successfully.
+ * The srcSegment will be matched in an "endsWith" manner. This is because the src returned by angular events
+ * usually looks like "../../dir1/dir2/dir3/dir4/file.html" and such long src may lead to errors.
+ * Using "endsWith" matching allows to only supply the segment of the filepath required to correctly identify the full src.
+ */
+JsUtil.addFunctionToExecuteOnRouteLoadSuccess = function(srcSegment, func){
+	var mapping = Object.create(JsUtil.SrcFunctionMapping);
+	mapping.src = srcSegment;
+	mapping.func = func;
+	JsUtil.FunctionsToExecuteOnRouteLoadSuccess.push(mapping);
+}
+
+/**
+ * This is called from an event handler. It will search if there are any registered mappings
+ * which match (using endsWith) this src, and if found, will execute the associated functions.
+ */
+JsUtil.executeOnRouteLoadSuccess = function(src){
+	for(var i=0;i<JsUtil.FunctionsToExecuteOnRouteLoadSuccess.length;i++){
+		var mapping = JsUtil.FunctionsToExecuteOnRouteLoadSuccess[i];
+		if(src.endsWith(mapping.src)){
+			var func = mapping.func;
+			func();
+		}
+	}
+}
+
+/**
+ * This will load a utility angular module, used to track route and include load events
+ */
+JsUtil.loadJsUtilAngularModule = function(){
+	var jsUtilModule = angular.module('js-util', []);
+
+	jsUtilModule.run(function($rootScope, $timeout, $document, $compile){
+
+		JsUtil.Angular.Compile = $compile;
+				
+		$rootScope.$on("$routeChangeSuccess", function(event, currentRoute, previousRoute){
+
+			/*console.log('routeChangeSuccess event:');
+			console.log(event);
+			console.log('currentRoute:');
+			console.log(currentRoute);
+			console.log('previousRoute:');
+			console.log(previousRoute);			*/
+
+			JsUtil.executeOnRouteLoadSuccess(currentRoute.loadedTemplateUrl);
+		});
+
+		$rootScope.$on("$includeContentLoaded", function(event, src){
+
+			/*console.log('includeContentLoaded event:');
+			console.log(event);
+			console.log('src: ' + src);*/
+
+			$timeout(JsUtil.executeOnIncludeLoadSuccess(src));
+			
+		});
+	});
+	var mainModule = $('[ng-app]').first();
+	var mainModuleName = mainModule.attr('ng-app');
+	//console.log(mainModuleName);
+	angular.module(mainModuleName).requires.push('js-util');
+}
+
+/**
+ * 
+ */
+JsUtil.appendModuleLoader = function(){
+	var script = $('<script>');
+	script.html('JsUtil.loadJsUtilAngularModule();');
+	$(document.body).append(script);
+}
 
 /**
  * Runs on document.ready
  */
 $(document).ready(function(){
-	JsUtil.executeFunctions();	
+	JsUtil.appendModuleLoader();
+	JsUtil.executeFunctionsOnReady();	
 });
+/**
+ * Polyfill for endsWith
+ */
+if (!String.prototype.endsWith) {
+  String.prototype.endsWith = function(searchString, position) {
+      var subjectString = this.toString();
+      if (typeof position !== 'number' || !isFinite(position) || Math.floor(position) !== position || position > subjectString.length) {
+        position = subjectString.length;
+      }
+      position -= searchString.length;
+      var lastIndex = subjectString.lastIndexOf(searchString, position);
+      return lastIndex !== -1 && lastIndex === position;
+  };
+};

@@ -33,3 +33,8 @@ openwis-wro4j/.settings
 openwis-wro4j/.project
 openwis-wro4j/.classpath
 openwis-wro4j/target
+openwis-security-saml/\.settings/
+
+openwis-security-saml/\.project
+
+openwis-security-saml/\.classpath

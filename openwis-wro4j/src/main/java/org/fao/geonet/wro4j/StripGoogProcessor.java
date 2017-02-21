@@ -36,7 +36,7 @@ public class StripGoogProcessor
     @Override
     public void process(Resource resource, Reader reader, Writer writer) throws IOException {
     	
-    	Log.error(Geonet.GEONETWORK, "StripGoogProcessor URI: " + resource.getUri());
+    	Log.debug(Geonet.GEONETWORK, "StripGoogProcessor URI: " + resource.getUri());
     	
         String js = IOUtils.toString(reader);
         final String[] split = pattern.split(js);

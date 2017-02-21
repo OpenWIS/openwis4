@@ -52,7 +52,7 @@ public class AddFileUriCommentProcessor implements ResourcePreProcessor, ImportA
     @Override
     public void process(Resource resource, Reader reader, Writer writer) throws IOException {
         String uri = resource.getUri();
-        Log.error(Geonet.GEONETWORK, "AddFileUriCommentProcessor URI: " + uri);
+        Log.debug(Geonet.GEONETWORK, "AddFileUriCommentProcessor URI: " + uri);
         if (uri.startsWith(ClosureDependencyUriLocator.URI_PREFIX)) {
             IOUtils.copy(reader, writer);
         } else {
