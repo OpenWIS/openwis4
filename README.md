@@ -7,14 +7,97 @@ OpenWIS v4 is an upgrade of the [OpenWIS software](http://openwis.github.io/open
 * [[Production installation guide]], including upgrading from OpenWIS 3.14.x. _TBD_
 
 ### Development
-_TBD_
+# OpenWIS v4
+OpenWIS v4 is an upgrade of the [OpenWIS software](http://openwis.github.io/openwis/) based on the 3.2.x series of [GeoNetwork](https://github.com/geonetwork/core-geonetwork) software. The major difference is a brand-new, modern user interface based on [AngularJS](https://angularjs.org/) framework.
 
-## Enhancements/Differences with GeoNetwork
-You can read on our Wiki what additional functionality OpenWIS provides on top of GeoNetwork under [Enhancements/Differences with GeoNetwork](). _TBD_
+## Installation
 
-## Development approach
-Our initial approach was based on forking GeoNetwork and locally changing its code. That proved to be more complicated than initially thought, as GeoNetwork is a very active project with frequent updates. Merging upstream changes was not always an easy task and, usually, only experienced developers of the project could securely perform successful merges. A side-effect of this was that compatibility-checking of our own code/changes with GeoNetwork was taking place late, thus resulting in more errors and conflicts.
+### Production
+* [[Production installation guide]], including upgrading from OpenWIS 3.14.x. _TBD_
 
-The alternative approach we decided to use was to use GeoNetwork as an external artefact rather than working directly on its source code. [Maven](https://maven.apache.org/), which is our build-tool, provides an efficient mechanism to support such requirements via its [Shade](https://maven.apache.org/plugins/maven-shade-plugin/) and [Overlay](https://maven.apache.org/plugins/maven-war-plugin/overlays.html) plugins.
+### Development
 
-You may check on our Wiki for a detailed explanation of the role of each module on this repository, together with an in-depth discussion of our development approach under [[Development approach]]. _TBD_
+#### Dependencies
+
+The current version has been tested with the following versions:
+
+- [Java SE JDK](http://www.oracle.com/technetwork/java/javase/downloads/index.html): Oracle JDK 1.8.0_45
+- [Apache Maven 3](https://maven.apache.org/download.cgi): version 3.2.1
+- [VirtualBox](https://www.virtualbox.org/wiki/Downloads): 5.1.4 
+- [Vagrant](https://www.vagrantup.com/downloads.html): 1.8.5
+
+	
+### Build of CGN
+	
+	git clone https://github.com/geonetwork/core-geonetwork.git
+	
+	cd core-geonetwork
+	
+Init the submodules:
+
+	git submodule init
+	git submodule update
+	
+Checkout OpenWISv4's required version:
+	
+	git checkout tags/3.2.0
+
+Then build the application:
+
+	mvn clean install
+
+### Build of OpenWIS v3
+
+From the workspace folder 
+
+Clone from the repository:
+	
+	git clone https://github.com/OpenWIS/openwis.git
+	cd openwis
+
+Checkout a stable branch:
+	
+	git checkout release/openwis-3.14.8
+	
+Build with maven:
+
+	mvn clean exec:exec
+	mvn clean install -P openwis -DskipTests -Dfile.encoding=UTF-8 
+
+### Build of OpenWIS v4
+
+From the workspace folder, clone source code from OpenWIS repository:
+
+	git clone https://github.com/OpenWIS/openwis4.git
+	
+When clone is done switch to develop branch:
+	
+	cd openwis4
+	git checkout develop
+	
+Navigate to openwis-parent and build:
+	
+	cd openwis-parent
+	mvn clean install
+	
+After the successfull build configure the Vangrant environment at:
+	
+	cd ../openwis-deployment/vagrant-allinone/
+	
+Create config.yaml and edit according to `config.yaml.sample`
+	
+	openwis_workspace: <Full path to OpenWIS sources>
+	portal_workspace: <Full path to CoreGeoNetwork sources>
+	
+Save and then execute:
+
+	vagrant box add --force openwis/centos7 https://repository-openwis-association.forge.cloudbees.com/artifacts/vagrant/openwis-centos-7.box
+	vagrant up
+
+> Note: In order to re-deploy enter `vagrant reload --provision`
+
+	
+When the papet scripts execution is done OpenWISv4 can be accesed at:
+
+	yourServerUrl:10080/geonetwork/
+
