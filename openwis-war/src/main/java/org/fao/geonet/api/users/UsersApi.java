@@ -438,6 +438,17 @@ public class UsersApi {
                 "Trying to set profile to " + profile
                     + " max profile permitted is: " + myProfile);
         }
+        
+        List<User> users = userRepository.findAll();
+        for(User u:users){
+        	for(String email:u.getEmailAddresses()){
+        		for(String email2:userDto.getEmailAddresses()){
+        			if(email.equalsIgnoreCase(email2)){
+        				throw new IllegalArgumentException("Email "+ email + " is already registered");
+        			}
+        		}        		
+        	}
+        }
 
         List<GroupElem> groups = new LinkedList<>();
 
