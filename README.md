@@ -44,7 +44,7 @@ Checkout OpenWISv4's required version:
 
 Then build the application:
 
-	mvn clean install
+	mvn clean install -DskipTests
 
 ### Build of OpenWIS v3
 
