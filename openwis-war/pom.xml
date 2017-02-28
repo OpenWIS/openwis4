@@ -136,6 +136,10 @@
 		</dependency>
 		<dependency>
 			<groupId>org.geonetwork-opensource</groupId>
+			<artifactId>services</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.geonetwork-opensource</groupId>
 			<artifactId>web-app</artifactId>
 			<type>war</type>
 		</dependency>
