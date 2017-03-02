@@ -12,7 +12,7 @@
 			<list>
 				<!-- This exists in -core.xml -->
 				<ref bean="securityContextPersistenceFilter" />
-				
+
 				<ref bean="samlFilter" />
 
 				<!-- This exists in -core.xml -->
@@ -46,12 +46,12 @@
 	<!-- Secured pages with SAML as entry point -->
 	<security:http entry-point-ref="samlEntryPoint" use-expressions="false">
 		<security:intercept-url pattern="/saml/metadata/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
-		<security:intercept-url pattern="/saml/SSO/**" access="IS_AUTHENTICATED_ANONYMOUSLY" /> 
+		<security:intercept-url pattern="/saml/SSO/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY" />
 		<security:custom-filter before="FIRST" ref="metadataGeneratorFilter" />
 		<security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter" />
 		<!-- <security:custom-filter after="BASIC_AUTH_FILTER" ref="filterChainFilters" /> -->
-		
+
 	</security:http>
 
 
@@ -59,7 +59,7 @@
 	<bean id="samlFilter" class="org.springframework.security.web.FilterChainProxy">
 		<security:filter-chain-map request-matcher="ant">
 			<security:filter-chain pattern="/saml/login/**" filters="samlEntryPoint" />
-			<security:filter-chain pattern="/saml/logout/**" filters="samlLogoutFilter" />
+			<security:filter-chain pattern="/signout/**" filters="samlLogoutFilter" />
 			<security:filter-chain pattern="/saml/metadata/**" filters="metadataDisplayFilter" />
 			<security:filter-chain pattern="/saml/SSO/**" filters="samlWebSSOProcessingFilter" />
 			<security:filter-chain pattern="/saml/SSOHoK/**" filters="samlWebSSOHoKProcessingFilter" />
@@ -83,7 +83,7 @@
 
 	<!-- Handler for successful logout -->
 	<bean id="successLogoutHandler" class="org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler">
-		<property name="defaultTargetUrl" value="/logout.jsp" />
+		<property name="defaultTargetUrl" value="/" />
 	</bean>
 
 	<security:authentication-manager alias="authenticationManager">
@@ -165,7 +165,7 @@
 		<property name="userDetails" ref="samlUserDetailsService" />
 		<property name="forcePrincipalAsString" value="false" />
 	</bean>
-	
+
 	<!-- Custom user details service -->
 	<bean id="samlUserDetailsService" class="org.openwis.security.saml.OpenWISSamlUserDetailsService" />
 
@@ -192,7 +192,7 @@
 	</bean>
 
 	<!-- Override default logout processing filter with the one processing SAML messages -->
-	<bean id="samlLogoutFilter" class="org.springframework.security.saml.SAMLLogoutFilter">
+	<bean id="samlLogoutFilter" class="org.openwis.security.saml.CustomSamlLogoutFilter">
 		<constructor-arg index="0" ref="successLogoutHandler" />
 		<constructor-arg index="1" ref="logoutHandler" />
 		<constructor-arg index="2" ref="logoutHandler" />
@@ -220,7 +220,7 @@
 
 	<!-- SAML 2.0 WebSSO Assertion Consumer -->
 	<bean id="webSSOprofileConsumer" class="org.springframework.security.saml.websso.WebSSOProfileConsumerImpl">
-		<property name="responseSkew" value="36000"/> <!-- 10 hours -->
+		<property name="responseSkew" value="36000" /> <!-- 10 hours -->
 	</bean>
 
 	<!-- SAML 2.0 Holder-of-Key WebSSO Assertion Consumer -->
@@ -237,7 +237,7 @@
 
 	<!-- SAML 2.0 Logout Profile -->
 	<bean id="logoutprofile" class="org.springframework.security.saml.websso.SingleLogoutProfileImpl">
-		<property name="responseSkew" value="36000"/> <!-- 10 hours -->
+		<property name="responseSkew" value="36000" /> <!-- 10 hours -->
 	</bean>
 
 	<!-- Bindings, encoders and decoders used for creating and parsing messages -->
