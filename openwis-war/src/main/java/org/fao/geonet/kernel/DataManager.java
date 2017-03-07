@@ -592,9 +592,11 @@ public class DataManager implements ApplicationEventPublisherAware {
         try {
             Vector<Element> moreFields = new Vector<Element>();
             int id$ = Integer.parseInt(metadataId);
-
+            
+            // This is the CGN 3.2.0 version
+            //Element md = getXmlSerializer().selectNoXLinkResolver(metadataId, true);
             // get metadata, extracting and indexing any xlinks
-            Element md = getXmlSerializer().selectNoXLinkResolver(metadataId, true);
+            Element md = getXmlSerializer().selectNoXLinkResolver(metadataId, true, false);
             if (getXmlSerializer().resolveXLinks()) {
                 List<Attribute> xlinks = Processor.getXLinks(md);
                 if (xlinks.size() > 0) {
@@ -1640,7 +1642,9 @@ public class DataManager implements ApplicationEventPublisherAware {
      * in the same transaction.
      */
     public Element getMetadata(String id) throws Exception {
-        Element md = getXmlSerializer().selectNoXLinkResolver(id, false);
+    	// This is the CGN 3.2.0 version
+        //Element md = getXmlSerializer().selectNoXLinkResolver(id, false);
+    	Element md = getXmlSerializer().selectNoXLinkResolver(id, false, false);
         if (md == null) return null;
         md.detach();
         return md;
@@ -1657,7 +1661,9 @@ public class DataManager implements ApplicationEventPublisherAware {
      */
     public Element getMetadata(ServiceContext srvContext, String id, boolean forEditing, boolean withEditorValidationErrors, boolean keepXlinkAttributes) throws Exception {
         boolean doXLinks = getXmlSerializer().resolveXLinks();
-        Element metadataXml = getXmlSerializer().selectNoXLinkResolver(id, false);
+        // This is the CGN 3.2.0 version
+        //Element metadataXml = getXmlSerializer().selectNoXLinkResolver(id, false);
+        Element metadataXml = getXmlSerializer().selectNoXLinkResolver(id, false, forEditing);
         if (metadataXml == null) return null;
 
         String version = null;

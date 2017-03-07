@@ -14,7 +14,7 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<spring.version>4.2.4.RELEASE</spring.version>
 		<spring.security.version>3.2.0.RELEASE</spring.security.version>
-		<openwis.cgn.version>3.2.0-0</openwis.cgn.version>
+		<openwis.cgn.version>3.2.1-0</openwis.cgn.version>
 	</properties>
 	<modules>
 		<module>../openwis-domain</module>
