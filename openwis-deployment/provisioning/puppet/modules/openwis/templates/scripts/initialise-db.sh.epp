@@ -8,18 +8,23 @@ export POSTGIS_DIR=<%= $postgis_dir %>
 export TOUCH_FILE=<%= $touch_file %>
 test -f ${TOUCH_FILE} && exit
 
-# install the PostgreSQL admin pack
-as_postgres psql -c 'CREATE EXTENSION adminpack;'
-
-# install the PostGIS extensions
-as_postgres psql -c 'CREATE EXTENSION postgis;'
-as_postgres psql -c 'CREATE EXTENSION postgis_topology;'
-as_postgres psql -c 'CREATE EXTENSION ogr_fdw;'
-as_postgres psql -c 'CREATE EXTENSION pgrouting;'
-
 # create the OpenWIS & GeoNetwork databases
 as_postgres createdb OpenWIS
 as_postgres createdb GeoNetwork
+
+# install the PostGIS extensions at GeoNetwork DB
+as_postgres psql -d GeoNetwork -c 'CREATE EXTENSION adminpack;'
+as_postgres psql -d GeoNetwork -c 'CREATE EXTENSION postgis;'
+as_postgres psql -d GeoNetwork -c 'CREATE EXTENSION postgis_topology;'
+as_postgres psql -d GeoNetwork -c 'CREATE EXTENSION ogr_fdw;'
+as_postgres psql -d GeoNetwork -c 'CREATE EXTENSION pgrouting;'
+
+# install the PostGIS extensions at OpenWIS DB
+as_postgres psql -d OpenWIS -c 'CREATE EXTENSION adminpack;'
+as_postgres psql -d OpenWIS -c 'CREATE EXTENSION postgis;'
+as_postgres psql -d OpenWIS -c 'CREATE EXTENSION postgis_topology;'
+as_postgres psql -d OpenWIS -c 'CREATE EXTENSION ogr_fdw;'
+as_postgres psql -d OpenWIS -c 'CREATE EXTENSION pgrouting;'
 
 # install the OpenWIS citext extensions
 as_postgres psql -f ${CONFIG_SRC_DIR}/database/citext.sql
