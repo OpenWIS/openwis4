@@ -49,7 +49,7 @@ Init the submodules:
 	
 Checkout OpenWISv4's required version:
 	
-	git checkout tags/3.2.0
+	git checkout tags/3.2.1
 
 Then build the application:
 
